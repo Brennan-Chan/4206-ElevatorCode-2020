@@ -3,7 +3,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.buttons.POVButton;
-
+import frc.robot.commands.*;
+import frc.robot.Constants;
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
@@ -18,7 +19,7 @@ public class OI {
   public static final int DRIVER_STATION_SWITCHES = 2;
 
   //Create the Joysticks for both Driver and Operator
-  public final Joystick m_driveJoystick = new Joystick(DRIVER_JOYSTICK_PORT);
+  public final Joystick m_driveJoystick = new Joystick(0);
   public final Joystick m_operatorJoystick = new Joystick(OPERATOR_JOYSTICK_PORT);
   public final Joystick m_driveStation = new Joystick(DRIVER_STATION_SWITCHES);
 
@@ -62,7 +63,9 @@ public class OI {
     final JoystickButton m_dsSwitch3 = new JoystickButton(m_driveStation, 14);
     final JoystickButton m_dsSwitch4 = new JoystickButton(m_driveStation, 15);
     final JoystickButton m_dsSwitch5 = new JoystickButton(m_driveStation, 16);
-      }
+    m_driverA.whenPressed(new SetElevator(52650)); 
+    m_driverB.whenReleased(new SetElevator(0)); 
+  }
 
   public static OI getInstance() {
     if(m_instance == null) {

@@ -1,13 +1,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.subsystems.Elevator;
-import frc.robot.Constants;
-import frc.robot.OI;
-import frc.robot.Robot;
 
-public class SetElevatorManual extends Command {
-  public SetElevatorManual() {
+import frc.robot.subsystems.Elevator;
+import frc.robot.OI;
+
+public class ElevatorWithJoystick extends Command {
+  public ElevatorWithJoystick() {
     requires(Elevator.getInstance());
   }
 
@@ -19,10 +18,7 @@ public class SetElevatorManual extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if((OI.getInstance().m_driveJoystick.getRawAxis(1) > Constants.ELEVATOR_MANUAL_DEADBAND_UP) || (OI.getInstance().m_driveJoystick.getRawAxis(0) < Constants.ELEVATOR_MANUAL_DEADBAND_DOWN)) {
-      Elevator.getInstance().setPositionManual((OI.getInstance().m_driveJoystick.getRawAxis(1) * Constants.ELEVATOR_MANUAL_DPOS_SCALAR), Constants.ELEVATOR_F_UP);
-      Elevator.getInstance().setElevatorPosition( Constants.ELEVATOR_LOW_GOAL, Constants.ELEVATOR_F_UP);
-    }
+    Elevator.getInstance().joystickControl(-(OI.getInstance().m_driveJoystick.getRawAxis(1)));
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -34,7 +30,7 @@ public class SetElevatorManual extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.m_Elevator.setElevatorPosition(0,0);
+    Elevator.getInstance().joystickControl(0.0);
   }
 
   // Called when another command which requires one or more of the same

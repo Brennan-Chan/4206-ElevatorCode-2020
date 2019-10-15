@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.Elevator;
 
 /*
   The VM is configured to automatically run this class, and to call the
@@ -22,7 +23,7 @@ import frc.robot.subsystems.*;
 */
 public class Robot extends TimedRobot {
   //Subsystem instancing
-  public static Elevator up = new Elevator();
+  public static Elevator m_Elevator;
 
   public static RobotMap rm = new RobotMap();
   public static OI oi;
@@ -34,6 +35,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit(){
     oi = new OI();
+    m_Elevator = Elevator.getInstance();
     //TODO: Add drive modes (autonomous) to SmartDashboard here and in autonomousInit()
     SmartDashboard.putData("Teleop", m_chooser);
 
@@ -51,6 +53,14 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null){
       m_autonomousCommand.cancel();
     }
+    if(!m_Elevator.isClosedLoop()) {
+      m_Elevator.configClosedLoop();
+    }
+    if(oi.getDriver4() && (m_Elevator.getElevatorMPosition() == 0)) {
+      //m_Beak.setBeakGrab(false);
+      Scheduler.getInstance().add(new SetElevator(Constants.ELEVATOR_LOW_GOAL));
+    }
+    System.out.print(m_Elevator.getElevatorPosition());
   }
 
   @Override
