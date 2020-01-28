@@ -29,6 +29,7 @@ public class Constants {
     //Elevator Constants
 
     public static final int ELEVATOR_SOFT_LIMIT = 52650;
+    public static final int Elevator_Limit = 49664;
 
     public static final double ELEVATOR_UP_OUTPUT_PERCENT = 1.0;
     public static final double ELEVATOR_DOWN_OUTPUT_PERCENT = -0.4;
@@ -73,8 +74,8 @@ public class Constants {
     public static final double ENDGAME_I = 0.0;
     public static final double ENDGAME_D = 0.50;
 
-    public static final double ENDGAME_UP_OUTPUT_PERCENT = 0.6;
-    public static final double ENDGAME_DOWN_OUTPUT_PERCENT = -0.6;
+    public static final double ENDGAME_UP_OUTPUT_PERCENT = 0.8;
+    public static final double ENDGAME_DOWN_OUTPUT_PERCENT = -0.8;
 
     public static final int ENDGAME_ZERO = -4350; //if feet are slightly out since they can't go all the way back in
     public static final int ENDGAME_ZERO_ANKLES = -33500; //if ankles are deployed, zero is even lower to ensure we don't damage the robot

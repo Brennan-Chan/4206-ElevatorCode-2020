@@ -15,9 +15,11 @@ package frc.robot;
  */
 public class RobotMap {
 
-public static int ELEVATOR_ONE = 12;
+public static int ELEVATOR_ONE = 54;
 public static int ELEVATOR_TWO = 13;
-public static int ELEVATOR_THREE = 14;
+//public static int ELEVATOR_THREE = 14;
+public static int feeder1 = 51;
+public static int feeder2 = 53;
 
 public static final double beltPower = 1.0;
 

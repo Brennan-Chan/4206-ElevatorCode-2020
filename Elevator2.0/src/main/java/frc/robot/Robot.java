@@ -1,6 +1,8 @@
 
 package frc.robot;
-import edu.wpi.first.wpilibj.PIDSourceType;
+
+import edu.wpi.first.wpilibj.DigitalInput;
+//import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 import edu.wpi.first.wpilibj.command.Command;
@@ -12,7 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.Elevator;
 
 /*
   The VM is configured to automatically run this class, and to call the
@@ -26,19 +27,23 @@ public class Robot extends TimedRobot {
   public static Elevator m_Elevator;
 
   public static RobotMap rm = new RobotMap();
+  public static Motor motor = new Motor();
   public static OI oi;
+  public static HatchGrabber hg = new HatchGrabber();
+  public static Feeder fd = new Feeder();
+
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
+  
 
   //INIT METHODS
   @Override
   public void robotInit(){
     oi = new OI();
     m_Elevator = Elevator.getInstance();
-    //TODO: Add drive modes (autonomous) to SmartDashboard here and in autonomousInit()
     SmartDashboard.putData("Teleop", m_chooser);
-
+    
     
   }  
 
@@ -56,7 +61,7 @@ public class Robot extends TimedRobot {
     if(!m_Elevator.isClosedLoop()) {
       m_Elevator.configClosedLoop();
     }
-    if(oi.getDriver4() && (m_Elevator.getElevatorMPosition() == 0)) {
+    if(oi.driver.getRawButton(10) && (m_Elevator.getElevatorMPosition() == 0)) {
       //m_Beak.setBeakGrab(false);
       Scheduler.getInstance().add(new SetElevator(Constants.ELEVATOR_LOW_GOAL));
     }
@@ -74,7 +79,7 @@ public class Robot extends TimedRobot {
   //PERIODIC FUNCTIONS
   @Override
   public void robotPeriodic(){
-    
+    Scheduler.getInstance().run();
   }
 
   @Override
@@ -85,9 +90,15 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic(){
     Scheduler.getInstance().run();
+
+  
+  
   }
 
   @Override
   public void testPeriodic(){
+    Scheduler.getInstance().run();
   }
+
+  
 }

@@ -6,6 +6,12 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+
+
+
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.Constants;
 import frc.robot.RobotMap;
@@ -18,20 +24,17 @@ public class Elevator extends Subsystem {
   private static Elevator m_instance;
 
   private boolean m_isClosedLoop = false;
-  private boolean m_isClosedLoopEndGame = false;
   private double m_position = 1.0;
 
   //Declare Elevator TalonSRXs
   private final WPI_TalonSRX m_elevator1 = new WPI_TalonSRX(RobotMap.ELEVATOR_ONE);
   private final WPI_TalonSRX m_elevator2 = new WPI_TalonSRX(RobotMap.ELEVATOR_TWO);
-  private final WPI_TalonSRX m_elevator3 = new WPI_TalonSRX(RobotMap.ELEVATOR_THREE);
+  //private final WPI_TalonSRX m_elevator3 = new WPI_TalonSRX(RobotMap.ELEVATOR_THREE);
 
   //declare Elevator Shifter Solenoids
-  //private final DoubleSolenoid m_elevatorShifter = new DoubleSolenoid(0,RobotMap.ENDGAME_SHIFT_REVERSE, RobotMap.ENDGAME_SHIFT_FORWARD);
+  
 
   public Elevator() {
-
-    super();
 
     setFactoryDefault();
     setFollower();
@@ -55,37 +58,38 @@ public class Elevator extends Subsystem {
   private void setFactoryDefault() {
     m_elevator1.configFactoryDefault();
     m_elevator2.configFactoryDefault();
-    m_elevator3.configFactoryDefault();
+    //m_elevator3.configFactoryDefault();
   }
 
   private void setFollower() {
     m_elevator2.follow(m_elevator1);
-    m_elevator3.follow(m_elevator1);
+    //m_elevator3.follow(m_elevator1);
     m_elevator2.configOpenloopRamp(0.0, 0);
-    m_elevator3.configOpenloopRamp(0.0, 0);
+    //m_elevator3.configOpenloopRamp(0.0, 0);
   }
 
   private void setBrakeMode(boolean mode) {
     if (mode == true) {
       m_elevator1.setNeutralMode(NeutralMode.Brake);
       m_elevator2.setNeutralMode(NeutralMode.Brake);
-      m_elevator3.setNeutralMode(NeutralMode.Brake);
+      //m_elevator3.setNeutralMode(NeutralMode.Brake);
     }
     else {
       m_elevator1.setNeutralMode(NeutralMode.Coast);
       m_elevator2.setNeutralMode(NeutralMode.Coast);
-      m_elevator3.setNeutralMode(NeutralMode.Coast);
+      //m_elevator3.setNeutralMode(NeutralMode.Coast);
     }
   }
 
   public void setMotorSafeties() {
     m_elevator1.setSafetyEnabled(false);
     m_elevator2.setSafetyEnabled(false);
-    m_elevator3.setSafetyEnabled(false);
+    //m_elevator3.setSafetyEnabled(false);
   }
 
   private void configureMotors() {
-    m_elevator1.setInverted(false);
+    //TODO: set inverted thing if its not inverted
+    m_elevator1.setInverted(true);
     m_elevator1.configOpenloopRamp(1.0, 0);
     m_elevator1.overrideLimitSwitchesEnable(false);
     m_elevator1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
@@ -94,9 +98,6 @@ public class Elevator extends Subsystem {
     
   }
 
-  public void joystickControl(double yStick) {
-    m_elevator1.set(ControlMode.PercentOutput, yStick * Constants.ELEVATOR_OUTPUT_PERCENT);
-  }
 
   public void configOpenLoop() {
 
@@ -107,7 +108,7 @@ public class Elevator extends Subsystem {
     m_elevator1.enableVoltageCompensation(true);
 
     m_isClosedLoop = false;
-    m_isClosedLoopEndGame = false;
+  
 
   }
 
@@ -140,9 +141,10 @@ public class Elevator extends Subsystem {
     m_elevator1.setSelectedSensorPosition(0, 0, 0);
 
     m_isClosedLoop = true;
-    m_isClosedLoopEndGame = false;
+    
   }
 
+  
 
   public void configClosedLoopMagic(int cruiseVelocity, int acceleration) {
 
@@ -187,9 +189,6 @@ public class Elevator extends Subsystem {
     return m_isClosedLoop;
   }
 
-  public boolean isClosedLoopEndGame() {
-    return m_isClosedLoopEndGame;
-  }
 
   public int getElevatorPosition() {
 
@@ -230,6 +229,8 @@ public class Elevator extends Subsystem {
     m_elevator1.set(ControlMode.Position, m_position, DemandType.ArbitraryFeedForward, feedforward);
   }
 
+  
+
   public void setElevatorPositionMagic(double position, double feedforward) {
 
     m_position = position;
@@ -246,19 +247,23 @@ public class Elevator extends Subsystem {
     m_elevator1.setSelectedSensorPosition(0, 0, 0);
   }
 
-  public void setElevatorOpenLoop(double speed, boolean inverted)
-  {
+  public void incrementElevatorPosition(double position) {
 
-    double m_speed = speed;
-
-    if(inverted)
-      m_speed = -m_speed;
-    if((isClosedLoop() || isClosedLoopEndGame())){
-        configOpenLoop();
-
-    m_elevator1.set(ControlMode.PercentOutput, m_speed);
-    System.out.println("m_speed: " + m_speed);
-    //System.out.println("setting open loop");
+    if (!m_isClosedLoop) {
+      configClosedLoop();
     }
+
+    double localPosition = m_position;
+    localPosition += position;
+
+    if (getElevatorPosition() > Constants.ELEVATOR_MAX_HEIGHT && position > 0) {
+      localPosition = getElevatorPosition();
+    }
+
+    setElevatorPosition(localPosition, Constants.ELEVATOR_F_UP);
   }
+
+ 
+
+  
 }
